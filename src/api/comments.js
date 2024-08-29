@@ -15,15 +15,16 @@ commentsRouter.post("/", async (req, res) => {
       author,
       content
     );
+
     if (!comment) {
       return res.status(404).json("Failed to create comment");
-    }
+    };
     res.status(201).json("Comment created successfully");
     
   } catch (error) {
     console.error(error);
     res.status(500).json({message: error?.message});
-  }
+  };
 });
 
 commentsRouter.get('/', async (req, res) => {

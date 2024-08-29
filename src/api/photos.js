@@ -32,7 +32,7 @@ const PhotosService = require('../services/photos');
 //     }
 // });
 
-photosRouter.get('a/:id', async (req, res) => {
+photosRouter.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
         if (!id) {

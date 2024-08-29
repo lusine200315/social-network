@@ -4,9 +4,10 @@ const postsRouter = express.Router();
 const PostsService = require('../services/posts');
 
 const multer = require('multer');
-const PhotosService = require('../services/photos');
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
+
+const PhotosService = require('../services/photos');
 
 postsRouter.post('/', upload.single('image'), async (req, res) => {
     try {
