@@ -1,59 +1,107 @@
-const postsModel = require('../model/posts');
+const PostsModel = require('../model/posts');
 
 class PostsService {
-    static async createPost(content, authorId, image) {
-        if( !content.trim() || !authorId.trim()) {
-            return null;
-        };
+    static async createPost(content, author, image) {
         try {
-            const user = new postsModel({content, authorId, image});
+            if( !content.trim() || !author.trim()) {
+                return null;
+            };
+            const user = new PostsModel({content, author, image});
             return user.save();
             
         } catch(error) {
             console.error(error);
             throw new Error (error?.message);
-        }
+        };
     };
 
     static async getAllPosts() {
-        const posts = await postsModel.find();
+        try {
+            const posts = await PostsModel.find();
+            
+            if(!posts) {
+                return [];
+            };
+            return posts;
 
-        if(!posts) {
-            return [];
-        }
-        return posts;
+        } catch(error) {
+            console.error(error);
+            throw new Error (error?.message);
+        };
     };
 
     static async getPostById(id) {
-        if(!id) {
-            return null;
+        try {
+            if(!id) {
+                return null;
+            };
+            
+            const post = await PostsModel.findOne({ _id :id}).populate('author', 'username');
+            if(!post) {
+                return null;
+            };
+            return post;
+
+        } catch (error) {
+            console.error(error);
+            throw new Error (error?.message);
         }
-        
-        const post = await postsModel.findOne({ _id :id});
-        if(!post) {
-            return null;
-        }
-        return post;
+    };
+
+    static async getPostByAuthorIds(ids) {
+        try {
+            if(!ids) {
+                return null;
+            };
+            
+            let posts = [];
+            for(let i = 0; i < ids.length; i++) {
+                
+                let post = await PostsModel.findOne({author: ids[i]}).select('-_id').populate('author', 'username'); // exclude _id
+                
+                if(post) {
+                    posts.push(post);
+                };
+            };
+            
+            if(!posts) {
+                return null;
+            };
+            return posts;
+        }  catch (error) {
+            console.error(error);
+            throw new Error (error?.message);
+        };
     };
 
     static async deletePost(id) {
-        if(!id) {
-            return null;
+        try {
+            if(!id) {
+                return null;
+            };
+            const post = await PostsModel.findOneAndRemove({ _id: id});
+            if(!post) {
+                return null;
+            };
+            return post;
+        } catch (error) {
+            console.error(error);
+            throw new Error (error?.message);
         }
-        const post = await postsModel.findOneAndRemove({ _id: id});
-        if(!post) {
-            return null;
-        }
-        return post;
     };
 
     static async updatePost(id, data) {
-        if(!id || !data) {
-            return null;
-        };
-        const post = await postsModel.findOneAndUpdate({ _id: id}, data, { new: true });
-        return post;
+        try {
+            if(!id || !data) {
+                return null;
+            };
+            const post = await PostsModel.findOneAndUpdate({ _id: id}, data, { new: true });
+            return post;
+        } catch(error) {
+            console.error(error);
+            throw new Error (error?.message);
+        }
     };
-}
+};
 
 module.exports = PostsService;

@@ -4,26 +4,46 @@ const postsRouter = express.Router();
 const PostsService = require('../services/posts');
 
 const multer = require('multer');
-const upload = multer({dest: 'public/upload'});
-postsRouter.use(express.static('public'));
+const PhotosService = require('../services/photos');
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 postsRouter.post('/', upload.single('image'), async (req, res) => {
-    const { content, authorId } = req.body;
-    const { file } = req;
-    const image = file ? file.path : null;
-    
-    if( !content?.trim() || !authorId?.trim()) {
+    try {
+    const { content, author } = req.body;
+    const photo = req.file.buffer;
+
+    if( !content?.trim() || !author?.trim()) {
         return res.status(400).json({ message: 'Missing required fields' });
     };
 
-    try {
-        const post = await PostsService.createPost(content, authorId, image);
-        if(!post) {
-            return res.status(500).json({ message: 'Failed to create post' });
-        }
-        res.status(201).json('Post created successfully');
-        
+    let photoData;
+    if (photo) {
+        photoData = {
+            data: req.file.buffer,
+            contentType: req.file.mimetype,
+        };
+    };
+
+    const uploadedPhoto = await PhotosService.addPhoto(photoData);
+    const uploaded = {
+        url: `localhost:3001/cdn/${uploadedPhoto._id}`
+    };
+
+    const post = await PostsService.createPost(content, author, uploaded);
+    
+    if (uploadedPhoto && post) {
+        return res.status(201).send({ message: "Post data and image added successfully" });
+    } else if(uploadedPhoto && !post) {
+        return res.status(201).send({ message: "Only image added successfully" });
+    } else if(!uploadedPhoto && post) {
+        return res.status(201).send({ message: "Only post data added successfully" });
+    } else {
+        return res.status(500).json({ message: 'Internal Server Error' });
+    };
+
     } catch(error) {
+        console.log(error);
         res.status(500).json({message: error?.message});
     };
 });
@@ -43,12 +63,12 @@ postsRouter.get('/', async (req, res) => {
 });
 
 postsRouter.get('/:id', async (req, res) => {
-    const { id } = req.params;
-    if(!id) {
-        return res.status(400).json({ message: 'Missing required fields' });
-    };
-
     try {
+        const { id } = req.params;
+        if(!id) {
+            return res.status(400).json({ message: 'Missing required fields' });
+        };
+
         const post = await PostsService.getPostById(id);
         if(!post) {
             return res.status(404).json({ message: 'Post not found' });
@@ -62,12 +82,12 @@ postsRouter.get('/:id', async (req, res) => {
 });
 
 postsRouter.delete('/:id', async (req, res) => {
-    const { id } = req.params;
-    if(!id) {
-        return res.status(400).json({ message: 'Missing required fields' });
-    };
-
     try {
+        const { id } = req.params;
+        if(!id) {
+            return res.status(400).json({ message: 'Missing required fields' });
+        };
+
         const post = await PostsService.deletePost(id);
         if(!post) {
             return res.status(404).json({ message: 'Post not found' });
@@ -80,15 +100,15 @@ postsRouter.delete('/:id', async (req, res) => {
     };
 });
 
-postsRouter.patch('/:id', upload.single('image'), async (req, res) => {
-    const { id } = req.params;  
-    const { file } = req;
-    const image = file ? file.path : null;
-
-    if(!id || !req.body) {
-        return res.status(400).json({ message: 'Missing required fields' });
-    }
+postsRouter.patch('/:id', async (req, res) => {
     try {
+        const { id } = req.params;  
+        const { file } = req;
+        const image = file ? file.path : null;
+
+        if(!id || !req.body) {
+            return res.status(400).json({ message: 'Missing required fields' });
+        };
         if(image) {
             req.body.image = image;
         };

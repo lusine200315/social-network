@@ -4,15 +4,15 @@ const CommentsService = require("../services/comments");
 const commentsRouter = express.Router();
 
 commentsRouter.post("/", async (req, res) => {
-  const { authorId, content } = req.body;  
-
-  if (!authorId.trim() || !content.trim()) {
-    return res.status(404).json("Missing required fields");
-  }
-
   try {
+    const { author, content } = req.body;  
+
+    if (!author.trim() || !content.trim()) {
+      return res.status(404).json("Missing required fields");
+    };
+
     const comment = await CommentsService.createComment(
-      authorId,
+      author,
       content
     );
     if (!comment) {
@@ -32,7 +32,7 @@ commentsRouter.get('/', async (req, res) => {
 
     if(!comments) {
         return res.status(404).json({ message: 'Comments not found' });
-    }
+    };
     res.status(200).json(comments);
     
   } catch(error) {
@@ -42,13 +42,13 @@ commentsRouter.get('/', async (req, res) => {
 });
 
 commentsRouter.get('/:id', async (req, res) => {
-  const { id } = req.params;
-
-  if(!id) {
-    return res.status(404).json({ message: 'Comment not found' });
-  };
-
   try {
+    const { id } = req.params;
+
+    if(!id) {
+      return res.status(404).json({ message: 'Comment not found' });
+    };
+
     const comment = await CommentsService.getCommentById(id);
     
     if(!comment) {
@@ -63,12 +63,12 @@ commentsRouter.get('/:id', async (req, res) => {
 });
 
 commentsRouter.delete('/:id', async (req, res) => {
-  const { id } = req.params;
-  if(!id) {
-    return res.status(404).json({ message: 'Comment not found' });
-  };
-
   try {
+    const { id } = req.params;
+    if(!id) {
+      return res.status(404).json({ message: 'Comment not found' });
+    };
+
     const comment = CommentsService.deleteComment(id);
     if(!comment) {
       return res.status(404).json({ message: 'Comment not found' });
@@ -83,12 +83,12 @@ commentsRouter.delete('/:id', async (req, res) => {
 });
 
 commentsRouter.patch('/:id', async (req, res) => {
-  const { id } = req.params;  
-  if(!id || !req.body) {
-    return res.status(404).json({ message: 'Missing required fields' });
-  }
-  
   try {
+    const { id } = req.params;  
+    if(!id || !req.body) {
+      return res.status(404).json({ message: 'Missing required fields' });
+    };
+  
     const updatedComment = await CommentsService.updateComment(id, req.body, {
       new: true,            // Return the updated document
       runValidators: true,  // Run schema validators on update

@@ -1,13 +1,13 @@
-const usersModel = require('../model/users');
+const UsersModel = require('../model/users');
 
 class UsersService {
-    static createUser(email, username, password, avatar) {
-        
-        if( !email?.trim() || !username?.trim() || !password?.trim() ) {
-            return null;
-        };
+    static createUser(email, username, password) {
         try {
-            const user = new usersModel({email, username, password, avatar});
+        
+            if( !email?.trim() || !username?.trim() || !password?.trim() ) {
+                return null;
+            };
+            const user = new UsersModel({email, username, password});
             return user.save();
             
         } catch(error) {
@@ -17,78 +17,91 @@ class UsersService {
     };
 
     static async getAllUsers() {
-        const users = await usersModel.find();
+        try {
+            const users = await UsersModel.find();
 
-        if(!users) {
-            return [];
+            if(!users) {
+                return [];
+            };
+            return users;
+        } catch(error) {
+            console.error(error);
+            throw new Error (error?.message);
         };
-        return users;
     };
 
     static async getUserById(id) {
-        if(!id) {
-            return null;
+        try {
+            if(!id) {
+                return null;
+            };
+            
+            const user = await UsersModel.findOne({ _id: id});
+            if(!user) {
+                return null;
+            };
+            return user;
+        } catch(error) {
+            console.error(error);
+            throw new Error (error?.message);
         };
-        
-        const user = await usersModel.findOne({ _id: id});
-        if(!user) {
-            return null;
-        };
-        return user;
-    };
-
-    static async getUsersById(ids) {
-        if(!ids) {
-            return [];
-        };
-        let users = [];
-        for(let i = 0; i < ids.length; i++) {
-            users[i] = await usersModel.findOne({_id: ids[i]});
-        };
-        return users;
     };
 
     static async getUserByEmail(email) {
-        if(!email) {
-            return null;
+        try {
+            if(!email) {
+                return null;
+            };
+            const user = await UsersModel.findOne({email});
+            if(!user) {
+                return null;
+            };
+            return user;
+        } catch(error) {
+            console.error(error);
+            throw new Error (error?.message);
         };
-        const user = await usersModel.findOne({email});
-        if(!user) {
-            return null;
-        };
-        return user;
     }
 
     static async deleteUser(id) {
-        if(!id) {
-            return null;
-        }
-        const user = await usersModel.findOneAndRemove({ _id: id});
-        if(!user) {
-            return null;
-        }
-        return user;
+        try {
+            if(!id) {
+                return null;
+            };
+            const user = await UsersModel.findOneAndRemove({ _id: id});
+            if(!user) {
+                return null;
+            };
+            return user;
+        } catch(error) {
+            console.error(error);
+            throw new Error (error?.message);
+        };
     };
 
     static async updateUser(id, updateData, options) {
-        if(!id || !updateData) {
-            return null;
-        };
+        try {
+            if(!id || !updateData) {
+                return null;
+            };
+            
+            const update = {};
+
+            Object.keys(updateData).forEach(field => {
+                if (Array.isArray(updateData[field])) {
+                    update.$push = update.$push || {};
+                    update.$push[field] = { $each: updateData[field] };
+                    delete updateData[field]; 
+                };
+            });
         
-        const update = {};
-
-        Object.keys(updateData).forEach(field => {
-            if (Array.isArray(updateData[field])) {
-                update.$push = update.$push || {};
-                update.$push[field] = { $each: updateData[field] };
-                delete updateData[field]; 
-            }
-        });
-    
-        Object.assign(update, updateData);
-        return usersModel.findByIdAndUpdate({_id: id}, update, options);
-
+            Object.assign(update, updateData);
+            return UsersModel.findByIdAndUpdate({_id: id}, update, options);
+        } catch(error) {
+            console.error(error);
+            throw new Error (error?.message);
+        }
     };
-}
+};
 
 module.exports = UsersService;

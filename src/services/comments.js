@@ -1,14 +1,13 @@
-const commentsModel = require("../model/comments");
+const CommentsModel = require("../model/comments");
 
 class CommentsService {
-  static async createComment(authorId, content) {
-    
-    if (!authorId || !content) {
-      return null;
-    }
-
+  static async createComment(author, content) {
     try {
-      const comment = new commentsModel({ authorId, content });
+      if (!author || !content) {
+        return null;
+      };
+
+      const comment = new CommentsModel({ author, content });
       return comment.save();
     } catch(error) {
       console.error(error);
@@ -17,42 +16,66 @@ class CommentsService {
   }
 
   static async getAllComments() {
-    const comments = await commentsModel.find();
-    if (!comments) {
-      return [];
-    }
-    return comments;
+    try {
+      const comments = await CommentsModel.find();
+      if (!comments) {
+        return [];
+      }
+      return comments;
+
+    } catch(error) {
+      console.error(error);
+      throw new Error (error?.message);
+    };
   }
 
   static async getCommentById(id) {    
-    if (!id) {
-      return null;
-    }
-    const comment = await commentsModel.findOne({ _id: id });
-    if (!comment) {
-      return null;
-    }
-    return comment;
+    try {
+
+      if (!id) {
+        return null;
+      }
+      const comment = await CommentsModel.findOne({ _id: id });
+      if (!comment) {
+        return null;
+      };
+      return comment;
+
+    } catch(error) {
+      console.error(error);
+      throw new Error (error?.message);
+    };
   }
   
   static deleteComment(id) {
-    if (!id) {
-      return null;
+    try {
+      if (!id) {
+        return null;
+      }
+      const comment = CommentsModel.findOneAndRemove({ _id: id });
+      if (!comment) {
+        return null;
+      }
+      return comment;
+
+    } catch(error) {
+      console.error(error);
+      throw new Error (error?.message);
     }
-    const comment = commentsModel.findOneAndRemove({ _id: id });
-    if (!comment) {
-      return null;
-    }
-    return comment;
   }
 
   static async updateComment(id, data) {
-    if(!id || !data) {
-      return null;
+    try {
+      if(!id || !data) {
+        return null;
+      };
+      const comment = await CommentsModel.findOneAndUpdate({ _id: id}, data, { new: true });
+      return comment;
+    } catch(error) {
+      console.error(error);
+      throw new Error (error?.message);
     };
-    const comment = await commentsModel.findOneAndUpdate({ _id: id}, data, { new: true });
-    return comment;
-  }
-}
+  };
+};
 
 module.exports = CommentsService;

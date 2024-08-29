@@ -2,37 +2,33 @@ const express = require('express');
 const usersRouter = express.Router();
 
 const UsersService = require('../services/users');
-const auth = require('../core/auth');
 
-const multer = require('multer');
-const upload = multer({dest: 'public/upload'});
-usersRouter.use(express.static('public'));
+// const multer = require('multer');
+// const upload = multer({dest: 'public/upload'});
+// usersRouter.use(express.static('public'));
 
-const bcrypt = require('bcrypt');
-const SALT_ROUNDS = 10; 
-
-usersRouter.post('/', upload.single('avatar'), async (req, res) => {
-    const { email, username, password } = req.body;
-    const { file } = req;
+// usersRouter.post('/', upload.single('avatar'), async (req, res) => {
+//     const { email, username, password } = req.body;
+//     const { file } = req;
     
-    if( !email?.trim() || !username?.trim() || !password?.trim() ) {
-        return res.status(400).json({ message: 'Missing required fields' });
-    };
+//     if( !email?.trim() || !username?.trim() || !password?.trim() ) {
+//         return res.status(400).json({ message: 'Missing required fields' });
+//     };
 
-    const avatar = file ? file.path : null;
-    const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
+//     const avatar = file ? file.path : null;
+//     const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
 
-    try {
-        const user = await UsersService.createUser(email, username, hashedPassword, avatar);
-        if(!user) {
-            return res.status(500).json({ message: 'Failed to create user' });
-        }
-        res.status(201).json('User created successfully');
+//     try {
+//         const user = await UsersService.createUser(email, username, hashedPassword, avatar);
+//         if(!user) {
+//             return res.status(500).json({ message: 'Failed to create user' });
+//         }
+//         res.status(201).json('User created successfully');
         
-    } catch(error) {
-        res.status(500).json({message: error?.message});
-    };
-});
+//     } catch(error) {
+//         res.status(500).json({message: error?.message});
+//     };
+// });
 
 usersRouter.get('/', async (req, res) => {
     try {
@@ -49,12 +45,12 @@ usersRouter.get('/', async (req, res) => {
 });
 
 usersRouter.get('/:id', async (req, res) => {
-    const { id } = req.params;
-    if(!id) {
-        return res.status(400).json({ message: 'Missing required fields' });
-    };
-
     try {
+        const { id } = req.params;
+        if(!id) {
+            return res.status(400).json({ message: 'Missing required fields' });
+        };
+
         const user = await UsersService.getUserById(id);
         if(!user) {
             return res.status(404).json({ message: 'User not found' });
@@ -68,12 +64,12 @@ usersRouter.get('/:id', async (req, res) => {
 });
 
 usersRouter.delete('/:id', async (req, res) => {
-    const { id } = req.params;
-    if(!id) {
-        return res.status(400).json({ message: 'Missing required fields' });
-    };
-
     try {
+        const { id } = req.params;
+        if(!id) {
+            return res.status(400).json({ message: 'Missing required fields' });
+        };
+
         const user = await UsersService.deleteUser(id);
         if(!user) {
             return res.status(404).json({ message: 'User not found' });
@@ -86,19 +82,19 @@ usersRouter.delete('/:id', async (req, res) => {
     };
 });
 
-usersRouter.patch('/:id', upload.single('avatar'), async (req, res) => {
-    const { id } = req.params;  
-    const { file } = req;
-    const avatar = file ? file.path : null;
-
-    if(!id || !req.body) {
-        return res.status(400).json({ message: 'Missing required fields' });
-    }
-
+usersRouter.patch('/:id', async (req, res) => {
     try {
-        if(avatar) {
-            req.body.avatar = avatar;
+        const { id } = req.params;  
+        // const { file } = req;
+        // const avatar = file ? file : null;
+
+        if(!id || !req.body) {
+            return res.status(400).json({ message: 'Missing required fields' });
         };
+
+        // if(avatar) {
+        //     req.body.avatar = avatar;
+        // };
         const user = await UsersService.updateUser(id, req.body, {
             new: true,            
             runValidators: true,
@@ -106,7 +102,7 @@ usersRouter.patch('/:id', upload.single('avatar'), async (req, res) => {
         
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
-        }
+        };
         return res.status(200).json({ message: 'User updated successfully', user });
         
     } catch(error) {

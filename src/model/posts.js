@@ -10,10 +10,12 @@ const schema = new mongoose.Schema({
         maxlength: [5000, 'Content can be at most 5000 characters long'],
     },
     image: {
-        type: String,
-        default: null
+        url: {
+            type: String,
+            default: null
+        }
     },
-    authorId: {
+    author: {
         type: mongoose.Schema.Types.ObjectId,
         ref: usersSchema,
         required: [true, 'Author is required'],

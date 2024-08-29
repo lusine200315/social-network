@@ -49,10 +49,10 @@ const schema = new mongoose.Schema({
         type: Array,
         default: [],
     },
-    avatar: {
-        type: String,
-        default: null
-    },
+    // avatar: {
+    //     contentType: Buffer,
+    //     MimeType: String
+    // },
 });
 
 module.exports = mongoose.model('users', schema);
