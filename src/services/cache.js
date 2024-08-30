@@ -20,6 +20,9 @@ class CachesService {
                 return null;
             } else {
                 const result = await client.get(key);
+                if(result == []) {
+                    return null;
+                }
                 return result;
             };
         } catch (error) {
