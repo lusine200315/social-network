@@ -5,21 +5,21 @@ const commentsRouter = express.Router();
 
 commentsRouter.post("/", async (req, res) => {
   try {
-    const { author, content } = req.body;  
+    const { authorId, content } = req.body;  
 
-    if (!author.trim() || !content.trim()) {
+    if (!authorId?.trim() || !content?.trim()) {
       return res.status(404).json("Missing required fields");
     };
 
     const comment = await CommentsService.createComment(
-      author,
+      authorId,
       content
     );
 
     if (!comment) {
       return res.status(404).json("Failed to create comment");
     };
-    res.status(201).json("Comment created successfully");
+    res.status(201).json({message: "Comment created successfully"});
     
   } catch (error) {
     console.error(error);

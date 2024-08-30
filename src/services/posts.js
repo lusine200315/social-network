@@ -3,7 +3,7 @@ const PostsModel = require('../model/posts');
 class PostsService {
     static async createPost(content, author, image) {
         try {
-            if( !content.trim() || !author.trim()) {
+            if( !content?.trim() || !author?.trim()) {
                 return null;
             };
             const user = new PostsModel({content, author, image});
