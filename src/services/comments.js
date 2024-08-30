@@ -19,7 +19,7 @@ class CommentsService {
     try {
       const comments = await CommentsModel.find();
       if (!comments) {
-        return [];
+        return null;
       }
       return comments;
 

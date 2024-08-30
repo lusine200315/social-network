@@ -33,7 +33,7 @@ commentsRouter.get('/', async (req, res) => {
     if(!comments) {
         return res.status(404).json({ message: 'Comments not found' });
     };
-    res.status(200).json({"comments":comments.toPr });
+    res.status(200).json({"comments":comments });
     
   } catch(error) {
     console.error(error);
