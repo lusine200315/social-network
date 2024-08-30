@@ -30,7 +30,7 @@ postsRouter.post('/', upload.single('image'), async (req, res) => {
         const uploadedPhoto = await PhotosService.addPhoto(photoData);
 
         const uploaded = {
-            url: `localhost:${PORT}/cdn/${uploadedPhoto._id}`
+            url: `65.108.80.197:${PORT}/cdn/${uploadedPhoto._id}`
         };
 
         const post = await PostsService.createPost(content, authorId, uploaded);

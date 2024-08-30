@@ -3,7 +3,7 @@ const client = require('../core/redis');
 class CachesService {
     static async setCacheData(key, value) {
         if (!key || !value) {
-            throw new Error('Both key and value must be provided.');
+            return null;
         };
 
         try {
@@ -17,7 +17,7 @@ class CachesService {
     static async getCacheData(key) {
         try {
             if(!key) {
-                throw new Error('Key is required');
+                return null;
             } else {
                 const result = await client.get(key);
                 return result;
