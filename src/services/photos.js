@@ -25,7 +25,6 @@ class PhotosService {
             return null;
         };
 
-        console.log(img, 1111);
         const result = await PhotosModel(img);
         return result.save();
     };

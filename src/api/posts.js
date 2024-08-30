@@ -27,8 +27,6 @@ postsRouter.post('/', upload.single('image'), async (req, res) => {
     };
 
     const uploadedPhoto = await PhotosService.addPhoto(photoData);
-    console.log(uploadedPhoto, 13);
-    
 
     const uploaded = {
         url: `localhost:3001/cdn/${uploadedPhoto._id}`
