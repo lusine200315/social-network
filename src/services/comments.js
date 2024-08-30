@@ -1,13 +1,13 @@
 const CommentsModel = require("../model/comments");
 
 class CommentsService {
-  static async createComment(authorid, content) {
+  static async createComment(authorId, content) {
     try {
-      if (!authorid || !content) {
+      if (!authorId || !content) {
         return null;
       };
 
-      const comment = new CommentsModel({ authorid, content });
+      const comment = new CommentsModel({ authorId, content });
       return comment.save();
     } catch(error) {
       console.error(error);

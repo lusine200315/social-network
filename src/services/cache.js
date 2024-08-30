@@ -20,7 +20,6 @@ class CachesService {
                 throw new Error('Key is required');
             } else {
                 const result = await client.get(key);
-                    console.log("Data get form cache");
                 return result;
             };
         } catch (error) {
@@ -33,9 +32,8 @@ class CachesService {
             if(!key) {
                 throw new Error('Key is required');
             } else {
-                const delReply = await client.del(key);
-                console.log('Del reply:', delReply);
-                return delReply;
+                const result = await client.del(key);
+                return result;
             };
         } catch (error) {
             console.error('Error deleting post:', error);

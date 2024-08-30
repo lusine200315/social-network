@@ -8,6 +8,7 @@ class PhotosService {
             };
 
             const result = await PhotosModel.findOne({_id: id});
+            
             if(!result) {
                 return null;
             };

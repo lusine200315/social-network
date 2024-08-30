@@ -2,7 +2,7 @@ const mongoose = require("../core/db");
 const usersSchema = require("./users");
 
 const schema = new mongoose.Schema({
-  author: {
+  authorId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: usersSchema,
     required: [true, 'Author ID is required'],

@@ -1,5 +1,6 @@
 const express = require('express');
 const postsRouter = express.Router();
+const PORT = process.env.PORT;
 
 const PostsService = require('../services/posts');
 
@@ -10,44 +11,44 @@ const upload = multer({ storage: storage });
 const PhotosService = require('../services/photos');
 
 postsRouter.post('/', upload.single('image'), async (req, res) => {
-    // try {
-    const { content, author } = req.body;
-    const photo = req.file.buffer;
+    try {
+        const { content, authorId } = req.body;
+        const photo = req.file.buffer;
 
-    if( !content?.trim() || !author?.trim()) {
-        return res.status(400).json({ message: 'Missing required fields' });
-    };
-
-    let photoData;
-    if (photo) {
-        photoData = {
-            data: req.file.buffer,
-            contentType: req.file.mimetype,
+        if( !content?.trim() || !authorId?.trim()) {
+            return res.status(400).json({ message: 'Missing required fields' });
         };
+
+        let photoData;
+        if (photo) {
+            photoData = {
+                data: req.file.buffer,
+                contentType: req.file.mimetype,
+            };
+        };
+
+        const uploadedPhoto = await PhotosService.addPhoto(photoData);
+
+        const uploaded = {
+            url: `localhost:${PORT}/cdn/${uploadedPhoto._id}`
+        };
+
+        const post = await PostsService.createPost(content, authorId, uploaded);
+        
+        if (uploadedPhoto && post) {
+            return res.status(201).json({ message: "Post data and image added successfully" });
+        } else if(uploadedPhoto && !post) {
+            return res.status(201).json({ message: "Only image added successfully" });
+        } else if(!uploadedPhoto && post) {
+            return res.status(201).json({ message: "Only post data added successfully" });
+        } else {
+            return res.status(500).json({ message: 'Internal Server Error' });
+        };
+
+    } catch(error) {
+        console.log(error);
+        res.status(500).json({message: error?.message});
     };
-
-    const uploadedPhoto = await PhotosService.addPhoto(photoData);
-
-    const uploaded = {
-        url: `localhost:3001/cdn/${uploadedPhoto._id}`
-    };
-
-    const post = await PostsService.createPost(content, author, uploaded);
-    
-    if (uploadedPhoto && post) {
-        return res.status(201).json({ message: "Post data and image added successfully" });
-    } else if(uploadedPhoto && !post) {
-        return res.status(201).json({ message: "Only image added successfully" });
-    } else if(!uploadedPhoto && post) {
-        return res.status(201).json({ message: "Only post data added successfully" });
-    } else {
-        return res.status(500).json({ message: 'Internal Server Error' });
-    };
-
-    // } catch(error) {
-    //     console.log(error);
-    //     res.status(500).json({message: error?.message});
-    // };
 });
 
 postsRouter.get('/', async (req, res) => {

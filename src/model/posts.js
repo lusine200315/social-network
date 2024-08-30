@@ -15,10 +15,10 @@ const schema = new mongoose.Schema({
             default: null
         }
     },
-    author: {
+    authorId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: usersSchema,
-        required: [true, 'Author is required'],
+        required: [true, 'AuthorId is required'],
     },
     likes: {
         type: Number,

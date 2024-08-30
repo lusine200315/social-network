@@ -1,12 +1,12 @@
 const PostsModel = require('../model/posts');
 
 class PostsService {
-    static async createPost(content, author, image) {
+    static async createPost(content, authorId, image) {
         try {
-            if( !content?.trim() || !author?.trim()) {
+            if( !content?.trim() || !authorId?.trim()) {
                 return null;
             };
-            const user = new PostsModel({content, author, image});
+            const user = new PostsModel({content, authorId, image});
             return user.save();
             
         } catch(error) {

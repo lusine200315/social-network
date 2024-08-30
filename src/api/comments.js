@@ -6,9 +6,8 @@ const commentsRouter = express.Router();
 commentsRouter.post("/", async (req, res) => {
   try {
     const { authorId, content } = req.body;  
-
     if (!authorId?.trim() || !content?.trim()) {
-      return res.status(404).json("Missing required fields");
+      return res.status(404).json({message: "Missing required fields"});
     };
 
     const comment = await CommentsService.createComment(
@@ -17,7 +16,7 @@ commentsRouter.post("/", async (req, res) => {
     );
 
     if (!comment) {
-      return res.status(404).json("Failed to create comment");
+      return res.status(404).json({message: "Failed to create comment"});
     };
     res.status(201).json({message: "Comment created successfully"});
     
@@ -34,7 +33,7 @@ commentsRouter.get('/', async (req, res) => {
     if(!comments) {
         return res.status(404).json({ message: 'Comments not found' });
     };
-    res.status(200).json(comments);
+    res.status(200).json({"comments":comments.toPr });
     
   } catch(error) {
     console.error(error);
