@@ -1,7 +1,7 @@
 const PhotosModel = require('../model/photos');
 
 class PhotosService {
-    static async getPhoto(photo) {
+    static async getPhoto() {
         try {
             if(!photo) {
                 return null;
@@ -13,6 +13,14 @@ class PhotosService {
             console.error(error);
             throw new Error (error?.message);
         };
+    };
+
+    static async addPhoto(img) {
+        if(!img) {
+            return null;
+        };
+        const result = await PhotosModel(img)
+        return result;
     };
 };
 
