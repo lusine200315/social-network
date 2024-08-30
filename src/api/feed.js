@@ -22,14 +22,13 @@ feedRouter.get('/:id', authMiddleware, async (req, res) => {
         const followersIds = user.followers;
 
         const feedFromCache = await CachesService.getCacheData(id);
-        if(feedFromCache) {
-            return res.json({feed: JSON.parse(feedFromCache)});  
+        if(!feedFromCache) {
+            const feedFromDb = await PostsService.getPostByAuthorIds(followersIds);    
+            await CachesService.setCacheData(id, JSON.stringify(feedFromDb));
+            res.json({feed: feedFromDb});
         };
+        return res.json({feed: JSON.parse(feedFromCache)});  
 
-        const feedFromDb = await PostsService.getPostByAuthorIds(followersIds);    
-        await CachesService.setCacheData(id, JSON.stringify(feedFromDb));
-                
-        res.json({feed: feedFromDb});
     } catch(error) {
         console.log(error);
     };
