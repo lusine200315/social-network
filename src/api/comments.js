@@ -1,9 +1,10 @@
 const express = require("express");
-const CommentsService = require("../services/comments");
-
 const commentsRouter = express.Router();
 
-commentsRouter.post("/", async (req, res) => {
+const CommentsService = require("../services/comments");
+const authMiddleware = require('../middleware/auth');
+
+commentsRouter.post("/", authMiddleware, async (req, res) => {
   try {
     const { authorId, content } = req.body;  
     if (!authorId?.trim() || !content?.trim()) {
@@ -26,7 +27,7 @@ commentsRouter.post("/", async (req, res) => {
   };
 });
 
-commentsRouter.get('/', async (req, res) => {
+commentsRouter.get('/', authMiddleware, async (req, res) => {
   try {
     const comments = await CommentsService.getAllComments();
 

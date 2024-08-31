@@ -2,7 +2,6 @@ const express = require('express');
 const usersRouter = express.Router();
 
 const UsersService = require('../services/users');
-
 const authMiddleware = require('../middleware/auth');
 
 usersRouter.get('/', authMiddleware, async (req, res) => {
@@ -57,7 +56,7 @@ usersRouter.delete('/:id', authMiddleware, async (req, res) => {
     };
 });
 
-usersRouter.patch('/:id', async (req, res) => {
+usersRouter.patch('/:id', authMiddleware, async (req, res) => {
     try {
         const { id } = req.params;  
 
