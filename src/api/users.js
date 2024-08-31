@@ -3,32 +3,7 @@ const usersRouter = express.Router();
 
 const UsersService = require('../services/users');
 
-// const multer = require('multer');
-// const upload = multer({dest: 'public/upload'});
-// usersRouter.use(express.static('public'));
-
-// usersRouter.post('/', upload.single('avatar'), async (req, res) => {
-//     const { email, username, password } = req.body;
-//     const { file } = req;
-    
-//     if( !email?.trim() || !username?.trim() || !password?.trim() ) {
-//         return res.status(400).json({ message: 'Missing required fields' });
-//     };
-
-//     const avatar = file ? file.path : null;
-//     const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);
-
-//     try {
-//         const user = await UsersService.createUser(email, username, hashedPassword, avatar);
-//         if(!user) {
-//             return res.status(500).json({ message: 'Failed to create user' });
-//         }
-//         res.status(201).json('User created successfully');
-        
-//     } catch(error) {
-//         res.status(500).json({message: error?.message});
-//     };
-// });
+const authMiddleware = require('../middleware/auth');
 
 usersRouter.get('/', async (req, res) => {
     try {
@@ -44,7 +19,7 @@ usersRouter.get('/', async (req, res) => {
     };
 });
 
-usersRouter.get('/:id', async (req, res) => {
+usersRouter.get('/:id', authMiddleware, async (req, res) => {
     try {
         const { id } = req.params;
         if(!id) {
@@ -63,7 +38,7 @@ usersRouter.get('/:id', async (req, res) => {
     };
 });
 
-usersRouter.delete('/:id', async (req, res) => {
+usersRouter.delete('/:id', authMiddleware, async (req, res) => {
     try {
         const { id } = req.params;
         if(!id) {
@@ -85,16 +60,11 @@ usersRouter.delete('/:id', async (req, res) => {
 usersRouter.patch('/:id', async (req, res) => {
     try {
         const { id } = req.params;  
-        // const { file } = req;
-        // const avatar = file ? file : null;
 
         if(!id || !req.body) {
             return res.status(400).json({ message: 'Missing required fields' });
         };
 
-        // if(avatar) {
-        //     req.body.avatar = avatar;
-        // };
         const user = await UsersService.updateUser(id, req.body, {
             new: true,            
             runValidators: true,

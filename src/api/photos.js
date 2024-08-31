@@ -1,9 +1,11 @@
 const express = require('express');
 const photosRouter = express.Router();
 
+const authMiddleware = require('../middleware/auth');
+
 const PhotosService = require('../services/photos');
 
-photosRouter.get('/:id', async (req, res) => {
+photosRouter.get('/:id', authMiddleware, async (req, res) => {
     try {
         const { id } = req.params;
         if (!id) {

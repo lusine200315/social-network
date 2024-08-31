@@ -4,12 +4,14 @@ const PORT = process.env.PORT;
 const HOST_NAME = process.env.HOST_NAME;
 
 const PostsService = require('../services/posts');
+const PhotosService = require('../services/photos');
+
+const authMiddleware = require('../middleware/auth');
 
 const multer = require('multer');
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
-const PhotosService = require('../services/photos');
 
 postsRouter.post('/', upload.single('image'), async (req, res) => {
     try {
@@ -52,7 +54,7 @@ postsRouter.post('/', upload.single('image'), async (req, res) => {
     };
 });
 
-postsRouter.get('/', async (req, res) => {
+postsRouter.get('/', authMiddleware, async (req, res) => {
     try {
         const posts = await PostsService.getAllPosts();
         if(!posts) {
@@ -66,7 +68,7 @@ postsRouter.get('/', async (req, res) => {
     };
 });
 
-postsRouter.get('/:id', async (req, res) => {
+postsRouter.get('/:id', authMiddleware, async (req, res) => {
     try {
         const { id } = req.params;
         if(!id) {
@@ -85,7 +87,7 @@ postsRouter.get('/:id', async (req, res) => {
     };
 });
 
-postsRouter.delete('/:id', async (req, res) => {
+postsRouter.delete('/:id', authMiddleware, async (req, res) => {
     try {
         const { id } = req.params;
         if(!id) {
@@ -104,7 +106,7 @@ postsRouter.delete('/:id', async (req, res) => {
     };
 });
 
-postsRouter.patch('/:id', async (req, res) => {
+postsRouter.patch('/:id', authMiddleware, async (req, res) => {
     try {
         const { id } = req.params;  
         const { file } = req;
