@@ -1,6 +1,7 @@
 const express = require('express');
 const postsRouter = express.Router();
 const PORT = process.env.PORT;
+const HOST_NAME = process.env.HOST_NAME;
 
 const PostsService = require('../services/posts');
 
@@ -30,7 +31,7 @@ postsRouter.post('/', upload.single('image'), async (req, res) => {
         const uploadedPhoto = await PhotosService.addPhoto(photoData);
 
         const uploaded = {
-            url: `localhost:${PORT}/cdn/${uploadedPhoto._id}`
+            url: `${HOST_NAME}:${PORT}/cdn/${uploadedPhoto._id}`
         };
 
         const post = await PostsService.createPost(content, authorId, uploaded);

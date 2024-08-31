@@ -86,14 +86,14 @@ class UsersService {
             };
             
             const update = {};
-
             Object.keys(updateData).forEach(field => {
                 if (Array.isArray(updateData[field])) {
-                    update.$push = update.$push || {};
-                    update.$push[field] = { $each: updateData[field] };
+                    update.$addToSet = update.$addToSet || {};
+                    update.$addToSet[field] = { $each: updateData[field] };
                     delete updateData[field]; 
                 };
             });
+            
         
             Object.assign(update, updateData);
             return UsersModel.findByIdAndUpdate({_id: id}, update, options);

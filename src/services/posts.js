@@ -55,10 +55,9 @@ class PostsService {
             };
             
             let posts = [];
-            for(let i = 0; i < ids.length; i++) {
-                
-                let post = await PostsModel.findOne({author: ids[i]}).select('-_id').populate('author', 'username'); // exclude _id
-                
+            for(let i = 0; i < ids.length; i++) {       
+                let post = await PostsModel.findOne({authorId: ids[i]}).select('-_id').populate('authorId', 'username');
+
                 if(post) {
                     posts.push(post);
                 };
