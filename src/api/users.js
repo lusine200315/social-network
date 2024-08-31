@@ -5,7 +5,7 @@ const UsersService = require('../services/users');
 
 const authMiddleware = require('../middleware/auth');
 
-usersRouter.get('/', async (req, res) => {
+usersRouter.get('/', authMiddleware, async (req, res) => {
     try {
         const users = await UsersService.getAllUsers();
         if(!users) {
